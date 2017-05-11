@@ -4,19 +4,20 @@ import "torii/router-dsl-ext";
 
 export default {
   name: 'torii-setup-routes',
-  initialize: function(applicationInstance, registry){
+  initialize: function(container, registry){
     const configuration = getConfiguration();
 
     if (!configuration.sessionServiceName) {
       return;
     }
 
-    var router = applicationInstance.get('router');
+    var router = container.lookup('router:main');
     var setupRoutes = function(){
-      var authenticatedRoutes = router.router.authenticatedRoutes;
+      var routerRouter = router._routerMicrolib || router.router;
+      var authenticatedRoutes = routerRouter.authenticatedRoutes;
       var hasAuthenticatedRoutes = !Ember.isEmpty(authenticatedRoutes);
       if (hasAuthenticatedRoutes) {
-        bootstrapRouting(applicationInstance, authenticatedRoutes);
+        bootstrapRouting(container, authenticatedRoutes);
       }
       router.off('willTransition', setupRoutes);
     };
